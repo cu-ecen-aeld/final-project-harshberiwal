@@ -1,6 +1,6 @@
-# final-project-harshberiwal
-final-project-harshberiwal created by GitHub Classroom
+# ECEN 5713 AESD Final Project
 
+PiSecure - A smart Home Security System
 
 ## Project Overview ## 
 THe Project Overview can be found here. 
