@@ -28,6 +28,13 @@ int main(int argc, char const* argv[])
 	struct sockaddr_in serv_addr;
 	char buffer[1];
 	int bytes_read=0;
+	unsigned int GPIO=23;
+
+	//GPIO iniitializing code
+	if(gpioInintialize() < 0)
+		exit(7);
+	gpioWrite(GPIO, 0);
+ 	
 	if ((client_fd = socket(AF_INET, SOCK_STREAM, 0)) < 0) 
 	{
 		syslog(LOG_ERR,"Socket creation error");
@@ -78,6 +85,7 @@ int main(int argc, char const* argv[])
 		printf("%d Bytes are read from socket\n",bytes_read);
 		bytes_read=0;
 		close(fd_status);
+		gpioWrite(GPIO, 1);
 	}
 	
 	//Closing the connected socket

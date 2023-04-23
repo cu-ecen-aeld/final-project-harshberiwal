@@ -1,3 +1,4 @@
+CROSS_COMPILE=
 CC = $(CROSS_COMPILE)gcc
 COMPFLAG = -Wall -Werror			
 .PHONY: all
