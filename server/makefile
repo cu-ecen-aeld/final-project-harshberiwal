@@ -2,8 +2,7 @@ CROSS_COMPILE=
 CC = $(CROSS_COMPILE)gcc
 COMPFLAG = -Wall -Werror			
 .PHONY: all
-all: server
-writer :
+all:
 	$(CC) $(COMPFLAG) -c server.c -o server.o
 	$(CC) $(COMPFLAG) -o server server.o	
 	
