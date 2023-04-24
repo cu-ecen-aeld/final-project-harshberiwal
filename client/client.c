@@ -25,14 +25,14 @@
 
 int main(int argc, char const* argv[])
 {
-	int status, valread, client_fd, fd_status, read_status, write_status;
+	int status, client_fd, fd_status, read_status, write_status;
 	struct sockaddr_in serv_addr;
 	char buffer[1];
 	int bytes_read=0;
 	unsigned int GPIO=23;
 
 	//GPIO iniitializing code
-	if(gpioInintialize() < 0)
+	if(gpioInintialise() < 0)
 		exit(7);
 	gpioWrite(GPIO, 0);
  	
