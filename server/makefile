@@ -1,21 +1,12 @@
-INCLUDE_DIRS = 
-LIB_DIRS = 
-CC=gcc -Wno-stringop-overflow
 CROSS_COMPILE=
-
-CDEFS=
-CFLAGS= -O0 -g $(INCLUDE_DIRS) $(CDEFS)
-LIBS= 
-
-all: server.o
-	$(CROSS_COMPILE)$(CC) $(LDFLAGS) $(CFLAGS) server.c -o server -lm -lpthread
-
-
+CC = $(CROSS_COMPILE)gcc
+COMPFLAG = -Wall -Werror			
+.PHONY: all
+all: server
+writer :
+	$(CC) $(COMPFLAG) -c server.c -o server.o
+	$(CC) $(COMPFLAG) -o server server.o	
+	
+.PHONY: clean
 clean:
-	-rm -f *.o *.d
-	-rm -f server
-
-depend:
-
-.c.o:
-	$(CC) $(CFLAGS) -c $<
+	rm -f *.o server

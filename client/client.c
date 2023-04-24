@@ -20,6 +20,7 @@
 #include <arpa/inet.h>
 #include <fcntl.h>
 #include <signal.h>
+#include <pigpio.h>
 #define PORT 9000
 
 int main(int argc, char const* argv[])
