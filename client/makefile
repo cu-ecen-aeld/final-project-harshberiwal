@@ -1,11 +1,12 @@
 CROSS_COMPILE=
-CC = $(CROSS_COMPILE)gcc
-COMPFLAG = -Wall -Werror		
-.PHONY: all
+CC=gcc -Wno-stringop-overflow
+SRC=client.c
+LIBS=-pthread
+CFLAGS=
+LINKFLAGS=-lm -lrt
+
 all:
-	$(CC) $(COMPFLAG) $(LIBS) -c client.c -o client.o
-	$(CC) $(COMPFLAG) $(LIBS) -o client client.o	
-	
-.PHONY: clean
+	$(CROSS_COMPILE)$(CC) $(SRC) $(LIBS) $(CFLAGS) $(LINKFLAGS) -o client
+
 clean:
-	rm -f *.o client	
+	rm client	
