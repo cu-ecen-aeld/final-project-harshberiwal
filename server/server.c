@@ -53,9 +53,9 @@ int main(int argc, char *argv[])
 {
 	int add =1;
 	int getaddr,sockopt_status,bind_status,listen_status; //Variables to get address for bind, return value of bind and listen
-	ssize_t rec_status=0; //Return of recv function
 	socklen_t size=sizeof(struct sockaddr); 
 	int fd_status;
+	int rd_status; //Read status from .JPG file
 	int send_status; //Return of send function
 	char read_arr[1]; //Create a temporary buffer to read file's contents
 	int bytes_send=0; //Bytes send from socket
@@ -148,9 +148,9 @@ int main(int argc, char *argv[])
 	
 			lseek(fd_status,0,SEEK_SET);
 			printf("Reading byte by byte from the .JPG file and sending through socket\n");
-			while((rec_status=recv(fd_status,&read_arr,1,0))!=0) //Read the file and store contents in the buffer
+			while((rd_status=read(fd_status,&read_arr,1))!=0) //Read the file and store contents in the buffer
 			{
-				if(rec_status==-1)
+				if(rd_status==-1)
 				{
 					syslog(LOG_ERR, "Could not read bytes from the file");
 					exit(10);
