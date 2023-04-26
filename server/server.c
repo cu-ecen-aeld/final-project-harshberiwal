@@ -139,7 +139,7 @@ int main(int argc, char *argv[])
 		{
 			system("/home/capture"); //Create a fork process to capture an image if PIR detects motion
 			memset(read_arr,0,1);  //Reset the buffer
-			fd_status=open("/home/cap.png",O_RDONLY, S_IRWXU | S_IRWXG | S_IRWXO); //Open file to read only
+			fd_status=open("/usr/bin/cap.png",O_RDONLY, S_IRWXU | S_IRWXG | S_IRWXO); //Open file to read only
 			if(fd_status==-1)
 			{
 				syslog(LOG_ERR, "Could not open the file to read");
