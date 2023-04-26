@@ -19,6 +19,7 @@
 #include <arpa/inet.h>
 #include <fcntl.h>
 #include <signal.h>
+#include <pigpio.h>
 
 int socket_fd,accept_return; //Socket fd and client connection
 
@@ -137,6 +138,7 @@ int main(int argc, char *argv[])
 	{
 		if(PIR_DETECTED==true) //PIR sensor logic to be added in sprint 3
 		{
+			system("/home/capture"); //Capture an image if PIR detects motion
 			memset(read_arr,0,1);  //Reset the buffer
 			int fd_status=open("/home/capture.png",O_RDONLY, S_IRWXU | S_IRWXG | S_IRWXO); //Open file to read only
 			if(fd_status==-1)

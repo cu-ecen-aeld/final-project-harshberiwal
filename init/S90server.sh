@@ -1,7 +1,7 @@
 #!/bin/sh
 
 echo "Starting server init script"
-sleep 20
+sleep 15
 cd /usr/bin
 ./server
-echo "Server init script is started"
+echo "Server init script started"
