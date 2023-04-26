@@ -53,12 +53,11 @@ int main(int argc, char *argv[])
 {
 	int add =1;
 	int getaddr,sockopt_status,bind_status,listen_status; //Variables to get address for bind, return value of bind and listen
-	ssize_t rec_status=1; //Return of recv function
+	ssize_t rec_status=0; //Return of recv function
 	socklen_t size=sizeof(struct sockaddr); 
 	int fd_status;
 	int send_status; //Return of send function
 	char read_arr[1]; //Create a temporary buffer to read file's contents
-	int rd_status; //Read status from .JPG file
 	int bytes_send=0; //Bytes send from socket
 	bool PIR_DETECTED=true;
 	
@@ -140,7 +139,7 @@ int main(int argc, char *argv[])
 		{
 			system("/home/capture"); //Create a fork process to capture an image if PIR detects motion
 			memset(read_arr,0,1);  //Reset the buffer
-			int fd_status=open("/home/cap.png",O_RDONLY, S_IRWXU | S_IRWXG | S_IRWXO); //Open file to read only
+			fd_status=open("/home/cap.png",O_RDONLY, S_IRWXU | S_IRWXG | S_IRWXO); //Open file to read only
 			if(fd_status==-1)
 			{
 				syslog(LOG_ERR, "Could not open the file to read");
@@ -149,9 +148,9 @@ int main(int argc, char *argv[])
 	
 			lseek(fd_status,0,SEEK_SET);
 			printf("Reading byte by byte from the .JPG file and sending through socket\n");
-			while((rd_status=read(fd_status,&read_arr,1))!=0) //Read the file and store contents in the buffer
+			while((rec_status=recv(fd_status,&read_arr,1,0))!=0) //Read the file and store contents in the buffer
 			{
-				if(rd_status==-1)
+				if(rec_status==-1)
 				{
 					syslog(LOG_ERR, "Could not read bytes from the file");
 					exit(10);
