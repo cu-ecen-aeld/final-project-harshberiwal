@@ -83,7 +83,7 @@ int main(int argc, char const* argv[])
 			}	
 			bytes_read++;
 		}
-		//printf("%d Bytes are read from socket\n",bytes_read);
+		printf("%d Bytes are read from socket\n",bytes_read);
 		//memset(buffer,0,1);
 		bytes_read=0;
 		close(fd_status);
