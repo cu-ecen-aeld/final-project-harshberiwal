@@ -58,7 +58,7 @@ int main(int argc, char const* argv[])
 	PyRun_SimpleString("print('AESD Project client from Python')");
 	Py_Finalize();*/
 
-	system("python3 /home/etc/test_python/hello.py"); //Testing a python program from C
+	system("python3 /etc/test_python/hello.py"); //Testing a python program from C
 
 	//Initialize signal handlers
 	if(signal(SIGINT,signal_handler)==SIG_ERR)
