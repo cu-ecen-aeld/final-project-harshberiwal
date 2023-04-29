@@ -147,7 +147,7 @@ int main(int argc, char *argv[])
 				syslog(LOG_ERR, "Could not open the file to read");
 				exit(9);
 			}
-			int img_size = lseek(img_fd, 0, SEEK_END);
+			int img_size = lseek(fd_status, 0, SEEK_END);
 			lseek(fd_status,0,SEEK_SET);
 			if(send(accept_return, &img_size, sizeof(img_size),0) == -1) {
 				syslog(LOG_ERR, "The image size couldn't be send to the client");
