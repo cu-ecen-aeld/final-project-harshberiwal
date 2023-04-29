@@ -68,7 +68,7 @@ int main(int argc, char const* argv[])
 		}
 	
 		printf("Reading byte by byte from socket and writing to .JPG file\n"); 
-		while((read_status=recv(client_fd, buffer,1,0))!=0)
+		while((read_status=read(client_fd, buffer,1))!=0)
 		{
 			if(read_status==-1)
 			{
