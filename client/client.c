@@ -21,8 +21,9 @@
 #include <fcntl.h>
 #include <signal.h>
 #include <pigpio.h>
-//#include <Python.h>
 #define PORT 9000
+#define GPIO_RELAY 23
+#define GPIO_LED 24
 
 int client_fd; //Socket connection
 
@@ -52,21 +53,6 @@ int main(int argc, char const* argv[])
 	struct sockaddr_in serv_addr;
 	char buffer[1];
 	int bytes_read=0;
-	unsigned int GPIO=23;
-	/*PyObject* pInt;
-	Py_Initialize();
-	PyRun_SimpleString("print('AESD Project client from Python')");
-	Py_Finalize();*/
-
-	int sys_status=system("python3 /etc/test_python/hello.py"); //Testing a python program from C
-	if(WIFEXITED(sys_status)) 
-	{
-		int exit_code = WEXITSTATUS(sys_status);
-		printf("Python code exited with %d\n", exit_code); 
-	}
-	else {
-		printf("Python code exited unusally\n");
-	}
 
 	//Initialize signal handlers
 	if(signal(SIGINT,signal_handler)==SIG_ERR)
@@ -83,7 +69,8 @@ int main(int argc, char const* argv[])
 	//GPIO iniitializing code
 	if(gpioInitialise() < 0)
 		exit(7);
-	gpioWrite(GPIO, 0);
+	gpioWrite(GPIO_RELAY, 1);
+	gpioWrite(GPIO_LED, 0);
  	
 	if ((client_fd = socket(AF_INET, SOCK_STREAM, 0)) < 0) 
 	{
@@ -142,7 +129,26 @@ int main(int argc, char const* argv[])
 		printf("%d Bytes are read from socket\n",bytes_read);
 		bytes_read=0;
 		close(fd_status);
-		gpioWrite(GPIO, 1);
+		int sys_status=system("python3 /etc/face-rec-sample/face_recog.py"); 
+		if(WIFEXITED(sys_status)) 
+		{
+			int exit_code = WEXITSTATUS(sys_status);
+			if(exit_code==1) //If face matches
+			{
+				gpioWrite(GPIO_LED, 0);
+				gpioWrite(GPIO_RELAY, 0); //Turn on relay (active low)
+				sleep(5);
+				gpioWrite(GPIO_RELAY, 1); //Turn off relay (active low)
+				
+			}
+			else if(exit_code==0)
+			{
+				gpioWrite(GPIO_RELAY, 1); 
+				gpioWrite(GPIO_LED, 1); //Turn on intruder LED
+				sleep(5);
+				gpioWrite(GPIO_LED, 0); //Turn off intruder LED
+			}
+		}
 	}
 	
 	closelog(); //Close syslog

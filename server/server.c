@@ -21,6 +21,8 @@
 #include <signal.h>
 #include <pigpio.h>
 
+#define GPIO_PIR 25
+
 int socket_fd,accept_return; //Socket fd and client connection
 
 //Structure for bind and accept
@@ -138,7 +140,7 @@ int main(int argc, char *argv[])
 	//Infinite loop for server-client connections
 	while(1)
 	{
-		if(gpioRead(24)==1) //if PIR detects object/person at gpio pin 24
+		if(gpioRead(GPIO_PIR)==0) //if PIR detects object/person at gpio pin 24
 		{
 			system("/home/capture"); //Create a fork process to capture an image if PIR detects motion
 			fd_status=open("/usr/bin/cap.png",O_RDONLY, S_IRWXU | S_IRWXG | S_IRWXO); //Open file to read only
@@ -176,7 +178,7 @@ int main(int argc, char *argv[])
 			memset(read_arr,0,1);
 			bytes_send=0;
 			close(fd_status); //Close file after reading
-			sleep(10); //Sleep after a file is send for the client to process
+			sleep(70); //Sleep after a file is send for the client to process
 		}
 	}
 	gpioTerminate();
