@@ -58,7 +58,15 @@ int main(int argc, char const* argv[])
 	PyRun_SimpleString("print('AESD Project client from Python')");
 	Py_Finalize();*/
 
-	system("python3 /etc/test_python/hello.py"); //Testing a python program from C
+	int sys_status=system("python3 /etc/test_python/hello.py"); //Testing a python program from C
+	if(WIFEXITED(sys_status)) 
+	{
+		int exit_code = WEXITSTATUS(sys_status);
+		printf("Python code exited with %d\n", exit_code); 
+	}
+	else {
+		printf("Python code exited unusally\n");
+	}
 
 	//Initialize signal handlers
 	if(signal(SIGINT,signal_handler)==SIG_ERR)
