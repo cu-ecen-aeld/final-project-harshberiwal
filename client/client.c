@@ -68,20 +68,20 @@ int main(int argc, char const* argv[])
 		}
 	
 		printf("Reading byte by byte from socket and writing to .JPG file\n"); 
-		while(((read_status=recv(client_fd, buffer,1,0))!=0))
+		while(((read_status=recv(client_fd, &buffer,1,0))!=0))
 		{
 			if(read_status==-1)
 			{
 				syslog(LOG_ERR,"Could not read from server");
 				exit(5);
 			}
-			write_status= write(fd_status,buffer,1);
+			write_status= write(fd_status,&buffer,1);
 			if(write_status!=1)
 			{
 				syslog(LOG_ERR,"Could not write total bytes to the file");
 				exit(6);
 			}	
-			printf("%c",buffer[0]); //Debuggig
+			//printf("%c",buffer[0]); //Debuggig
 			bytes_read++;
 		}
 		printf("\n%d Bytes are read from socket\n",bytes_read);
