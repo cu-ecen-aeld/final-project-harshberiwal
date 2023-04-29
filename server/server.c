@@ -168,9 +168,10 @@ int main(int argc, char *argv[])
 				
 				bytes_send++;
 			}
-			memset(read_arr,0,1);
-			send_status=send(accept_return,&read_arr,1,0); //Reset the data send through socket
 			printf("%d Bytes send to the client\n", bytes_send);
+			read_arr[0]='\n';
+			send(accept_return,&read_arr,1,0); //Send /n to terminal bytes reading at client
+			memset(read_arr,0,1);
 			bytes_send=0;
 			close(fd_status); //Close file after reading
 			sleep(10); //Sleep after a file is send for the client to process
