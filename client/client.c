@@ -82,6 +82,7 @@ int main(int argc, char const* argv[])
 				exit(6);
 			}	
 			bytes_read++;
+			printf("The value of read is %d",read_status);
 		}
 		printf("%d Bytes are read from socket\n",bytes_read);
 		bytes_read=0;
