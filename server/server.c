@@ -165,12 +165,10 @@ int main(int argc, char *argv[])
 					syslog(LOG_ERR, "The data packets couldn't be send to the client");
 					exit(11);
 				}
-				
-				bytes_send++;
+				printf("%c",read_arr[0]); //Debugging
+				bytes_send++; 
 			}
-			printf("%d Bytes send to the client\n", bytes_send);
-			read_arr[0]='\n';
-			send(accept_return,&read_arr,1,0); //Send /n to terminal bytes reading at client
+			printf("\n%d Bytes send to the client\n", bytes_send);
 			memset(read_arr,0,1);
 			bytes_send=0;
 			close(fd_status); //Close file after reading

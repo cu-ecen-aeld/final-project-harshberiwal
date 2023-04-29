@@ -68,7 +68,7 @@ int main(int argc, char const* argv[])
 		}
 	
 		printf("Reading byte by byte from socket and writing to .JPG file\n"); 
-		while(((read_status=recv(client_fd, buffer,1,0))!=0) && buffer[0]!='\n')
+		while(((read_status=recv(client_fd, buffer,1,0))!=0))
 		{
 			if(read_status==-1)
 			{
@@ -81,10 +81,10 @@ int main(int argc, char const* argv[])
 				syslog(LOG_ERR,"Could not write total bytes to the file");
 				exit(6);
 			}	
+			printf("%c",buffer[0]); //Debuggig
 			bytes_read++;
 		}
-		printf("%d Bytes are read from socket\n",bytes_read);
-		//memset(buffer,0,1);
+		printf("\n%d Bytes are read from socket\n",bytes_read);
 		bytes_read=0;
 		close(fd_status);
 		gpioWrite(GPIO, 1);
