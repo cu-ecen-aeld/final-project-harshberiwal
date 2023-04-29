@@ -21,6 +21,7 @@
 #include <fcntl.h>
 #include <signal.h>
 #include <pigpio.h>
+#include <Python.h>
 #define PORT 9000
 
 int client_fd; //Socket connection
@@ -52,6 +53,10 @@ int main(int argc, char const* argv[])
 	char buffer[1];
 	int bytes_read=0;
 	unsigned int GPIO=23;
+	PyObject* pInt;
+	Py_Initialize();
+	PyRun_SimpleString("print('AESD Project client from Python')");
+	Py_Finalize();
 
 	//Initialize signal handlers
 	if(signal(SIGINT,signal_handler)==SIG_ERR)
