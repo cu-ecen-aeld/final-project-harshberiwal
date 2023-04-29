@@ -23,6 +23,8 @@
 #include <pigpio.h>
 #define PORT 9000
 
+int client_fd; //Socket connection
+
 //Signal handler
 void signal_handler(int sig)
 {
@@ -45,7 +47,7 @@ void signal_handler(int sig)
 
 int main(int argc, char const* argv[])
 {
-	int status, client_fd, fd_status, read_status, write_status;
+	int status, fd_status, read_status, write_status;
 	struct sockaddr_in serv_addr;
 	char buffer[1];
 	int bytes_read=0;
