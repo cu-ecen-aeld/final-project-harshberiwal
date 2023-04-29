@@ -65,7 +65,6 @@ int main(int argc, char *argv[])
 	//GPIO iniitializing code
 	if(gpioInitialise() < 0)
 		exit(12);
-	gpioWrite(GPIO, 0);
 	
 	//To check if a signal is received
 	if(signal(SIGINT,signal_handler)==SIG_ERR)
@@ -173,7 +172,7 @@ int main(int argc, char *argv[])
 			printf("%d Bytes send to the client\n", bytes_send);
 			bytes_send=0;
 			close(fd_status); //Close file after reading
-			sleep(10) //Sleep after a file is send for the client to process
+			sleep(10); //Sleep after a file is send for the client to process
 		}
 	}
 	gpioTerminate();
