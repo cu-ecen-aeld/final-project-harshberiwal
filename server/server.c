@@ -43,7 +43,7 @@ void signal_handler(int sig)
 	//Close socket and client connection
 	close(socket_fd);
 	close(accept_return);
-	syslog(LOG_ERR,"Closed connection with %s\n",inet_ntoa(client_addr.sin_addr));
+	syslog(LOG_ERR,"Closed connection with %s",inet_ntoa(client_addr.sin_addr));
 	printf("Closed connection with %s\n",inet_ntoa(client_addr.sin_addr));
 	
 	exit(0); //Exit success 
@@ -66,7 +66,7 @@ int main(int argc, char *argv[])
 	if(gpioInitialise() < 0)
 		exit(12);
 	
-	//To check if a signal is received
+	//Initialize signal handlers
 	if(signal(SIGINT,signal_handler)==SIG_ERR)
 	{
 		syslog(LOG_ERR,"SIGINT failed");
@@ -147,13 +147,14 @@ int main(int argc, char *argv[])
 				syslog(LOG_ERR, "Could not open the file to read");
 				exit(9);
 			}
-			int img_size = lseek(fd_status, 0, SEEK_END);
+			int img_size = lseek(fd_status, 0, SEEK_END); //To find total bytes in the file (image size)
 			lseek(fd_status,0,SEEK_SET);
-			if(send(accept_return, &img_size, sizeof(img_size),0) == -1) {
+			if(send(accept_return, &img_size, sizeof(img_size),0) == -1)  //Send the image size first through socet
+			{
 				syslog(LOG_ERR, "The image size couldn't be send to the client");
-				exit(12);
+				exit(13);
 			}
-			printf("Reading byte by byte from the .JPG file and sending through socket\n");
+			printf("Reading byte by byte from the .png file and sending through socket\n");
 			while((rd_status=read(fd_status,&read_arr,1))!=0) //Read the file and store contents in the buffer
 			{
 				if(rd_status==-1)
@@ -169,10 +170,9 @@ int main(int argc, char *argv[])
 					syslog(LOG_ERR, "The data packets couldn't be send to the client");
 					exit(11);
 				}
-				//printf("%c",read_arr[0]); //Debugging
 				bytes_send++; 
 			}
-			printf("\n%d Bytes send to the client\n", bytes_send);
+			printf("%d Bytes send to the client\n", bytes_send);
 			memset(read_arr,0,1);
 			bytes_send=0;
 			close(fd_status); //Close file after reading

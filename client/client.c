@@ -23,6 +23,26 @@
 #include <pigpio.h>
 #define PORT 9000
 
+//Signal handler
+void signal_handler(int sig)
+{
+	if(sig==SIGINT)
+	{
+		syslog(LOG_INFO,"Caught SIGINT, leaving");
+	}
+	else if(sig==SIGTERM)
+	{
+		syslog(LOG_INFO,"Caught SIGTERM, leaving");
+	}
+	
+	//Close socket connection
+	close(client_fd);
+	syslog(LOG_ERR,"Closed connection with 10.0.0.120");
+	printf("Closed connection with 10.0.0.120\n");
+	
+	exit(0); //Exit success 
+}
+
 int main(int argc, char const* argv[])
 {
 	int status, client_fd, fd_status, read_status, write_status;
@@ -30,6 +50,18 @@ int main(int argc, char const* argv[])
 	char buffer[1];
 	int bytes_read=0;
 	unsigned int GPIO=23;
+
+	//Initialize signal handlers
+	if(signal(SIGINT,signal_handler)==SIG_ERR)
+	{
+		syslog(LOG_ERR,"SIGINT failed");
+		exit(9);
+	}
+	if(signal(SIGTERM,signal_handler)==SIG_ERR)
+	{
+		syslog(LOG_ERR,"SIGTERM failed");
+		exit(10);
+	}
 
 	//GPIO iniitializing code
 	if(gpioInitialise() < 0)
@@ -67,11 +99,12 @@ int main(int argc, char const* argv[])
 			exit(4);
 		}
 		int img_size; 
-		if(recv(client_fd, &img_size, sizeof(img_size), 0) == -1) {
+		if(recv(client_fd, &img_size, sizeof(img_size), 0) == -1) //Read image size from server
+		{
 			syslog(LOG_ERR,"Could not read image size from server");
-			exit(7);
+			exit(8);
 		}
-		printf("Reading byte by byte from socket and writing to .JPG file\n"); 
+		printf("Reading byte by byte from socket and writing to .png file\n"); 
 		while(((read_status=recv(client_fd, &buffer,1,0))!=0))
 		{
 			if(read_status==-1)
@@ -85,18 +118,16 @@ int main(int argc, char const* argv[])
 				syslog(LOG_ERR,"Could not write total bytes to the file");
 				exit(6);
 			}	
-			//printf("%c",buffer[0]); //Debuggig
 			bytes_read++;
-			if(bytes_read == img_size) 
+			if(bytes_read == img_size)  //If total bytes read is equal to image size, exit from loop
 				break; 
 		}
-		printf("\n%d Bytes are read from socket\n",bytes_read);
+		printf("%d Bytes are read from socket\n",bytes_read);
 		bytes_read=0;
 		close(fd_status);
 		gpioWrite(GPIO, 1);
 	}
 	
-	//Closing the connected socket
-	close(client_fd);
+	closelog(); //Close syslog
 	return 0;
 }
