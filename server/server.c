@@ -141,7 +141,6 @@ int main(int argc, char *argv[])
 		if(gpioRead(24)==1) //if PIR detects object/person at gpio pin 24
 		{
 			system("/home/capture"); //Create a fork process to capture an image if PIR detects motion
-			memset(read_arr,0,1);  //Reset the buffer
 			fd_status=open("/usr/bin/cap.png",O_RDONLY, S_IRWXU | S_IRWXG | S_IRWXO); //Open file to read only
 			if(fd_status==-1)
 			{
@@ -169,6 +168,8 @@ int main(int argc, char *argv[])
 				
 				bytes_send++;
 			}
+			memset(read_arr,0,1);
+			send_status=send(accept_return,&read_arr,1,0); //Reset the data send through socket
 			printf("%d Bytes send to the client\n", bytes_send);
 			bytes_send=0;
 			close(fd_status); //Close file after reading
