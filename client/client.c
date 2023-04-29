@@ -66,7 +66,11 @@ int main(int argc, char const* argv[])
 			syslog(LOG_ERR,"The file could not be created/found");
 			exit(4);
 		}
-	
+		int img_size; 
+		if(recv(client_fd, &img_size, sizeof(img_size), 0) == -1) {
+			syslog(LOG_ERR,"Could not read image size from server");
+			exit(7);
+		}
 		printf("Reading byte by byte from socket and writing to .JPG file\n"); 
 		while(((read_status=recv(client_fd, &buffer,1,0))!=0))
 		{
@@ -83,6 +87,8 @@ int main(int argc, char const* argv[])
 			}	
 			//printf("%c",buffer[0]); //Debuggig
 			bytes_read++;
+			if(bytes_read == img_size) 
+				break; 
 		}
 		printf("\n%d Bytes are read from socket\n",bytes_read);
 		bytes_read=0;

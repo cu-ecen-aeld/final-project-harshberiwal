@@ -147,8 +147,12 @@ int main(int argc, char *argv[])
 				syslog(LOG_ERR, "Could not open the file to read");
 				exit(9);
 			}
-	
+			int img_size = lseek(img_fd, 0, SEEK_END);
 			lseek(fd_status,0,SEEK_SET);
+			if(send(accept_return, &img_size, sizeof(img_size),0) == -1) {
+				syslog(LOG_ERR, "The image size couldn't be send to the client");
+				exit(12);
+			}
 			printf("Reading byte by byte from the .JPG file and sending through socket\n");
 			while((rd_status=read(fd_status,&read_arr,1))!=0) //Read the file and store contents in the buffer
 			{
