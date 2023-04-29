@@ -59,9 +59,13 @@ int main(int argc, char *argv[])
 	int send_status; //Return of send function
 	char read_arr[1]; //Create a temporary buffer to read file's contents
 	int bytes_send=0; //Bytes send from socket
-	bool PIR_DETECTED=true;
 	
 	openlog(NULL,LOG_PID, LOG_USER); //To setup logging with LOG_USER
+
+	//GPIO iniitializing code
+	if(gpioInitialise() < 0)
+		exit(12);
+	gpioWrite(GPIO, 0);
 	
 	//To check if a signal is received
 	if(signal(SIGINT,signal_handler)==SIG_ERR)
@@ -135,7 +139,7 @@ int main(int argc, char *argv[])
 	//Infinite loop for server-client connections
 	while(1)
 	{
-		if(PIR_DETECTED==true) //PIR sensor logic to be added in sprint 3
+		if(gpioRead(24)==1) //if PIR detects object/person at gpio pin 24
 		{
 			system("/home/capture"); //Create a fork process to capture an image if PIR detects motion
 			memset(read_arr,0,1);  //Reset the buffer
@@ -167,12 +171,12 @@ int main(int argc, char *argv[])
 				bytes_send++;
 			}
 			printf("%d Bytes send to the client\n", bytes_send);
-			PIR_DETECTED=false;
 			bytes_send=0;
 			close(fd_status); //Close file after reading
+			sleep(10) //Sleep after a file is send for the client to process
 		}
 	}
-	
+	gpioTerminate();
 	closelog(); //Close syslog
 	return 0;
 }
