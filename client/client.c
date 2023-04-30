@@ -134,7 +134,7 @@ int main(int argc, char const* argv[])
 		printf("%d bytes are read from the server\n",bytes_read);
 		bytes_read=0;
 		close(fd_status);
-		printf("\nRunning the face recognition algorithm\n");
+		printf("\nRunning the face recognition algorithm:\n");
 		int sys_status=system("python3 /etc/face-rec-sample/face_recog.py");  //Call the face recognition python code
 		if(WIFEXITED(sys_status)) 
 		{
