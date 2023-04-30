@@ -1,7 +1,7 @@
 /*
  * filename: server.c
  * Created by: Shashank Chandrasekaran 
- * Description: Server side C code to capture image from camera and transmit to client
+ * Description: Server side C code to capture image from camera and transmit image to client
  * Date: 21-Apr-2023
  * Reference: AESD Assignment code server.c
  */
@@ -66,18 +66,18 @@ int main(int argc, char *argv[])
 
 	//GPIO iniitializing code
 	if(gpioInitialise() < 0)
-		exit(12);
+		exit(1);
 	
 	//Initialize signal handlers
 	if(signal(SIGINT,signal_handler)==SIG_ERR)
 	{
 		syslog(LOG_ERR,"SIGINT failed");
-		exit(1);
+		exit(2);
 	}
 	if(signal(SIGTERM,signal_handler)==SIG_ERR)
 	{
 		syslog(LOG_ERR,"SIGTERM failed");
-		exit(2);
+		exit(3);
 	}
 	
 	//create socket
@@ -85,7 +85,7 @@ int main(int argc, char *argv[])
 	if(socket_fd==-1)
 	{
 		syslog(LOG_ERR, "Couldn't create a socket");
-		exit(3);
+		exit(4);
 	}
 	
 	//Get server address
@@ -94,7 +94,7 @@ int main(int argc, char *argv[])
 	if(getaddr !=0)
 	{
 		syslog(LOG_ERR, "Couldn't get the server's address");
-		exit(4);
+		exit(5);
 	}
 	
 	//Reuse address to avoid bind errors
@@ -102,7 +102,7 @@ int main(int argc, char *argv[])
 	if(sockopt_status==-1)
 	{
 		syslog(LOG_ERR, "Couldn't get the socket server's address");
-		exit(5);
+		exit(6);
 	}
 	
 	//Bind
@@ -111,7 +111,7 @@ int main(int argc, char *argv[])
 	{
 		freeaddrinfo(servinfo); //Free the memory before exiting
 		syslog(LOG_ERR, "Binding failed");
-		exit(6);
+		exit(7);
 	}
 	
 	freeaddrinfo(servinfo); //Free this memory before next operations
@@ -121,7 +121,7 @@ int main(int argc, char *argv[])
 	if(listen_status==-1)
 	{
 		syslog(LOG_ERR, "Listening to the connections failed");
-		exit(7);
+		exit(8);
 	}
 	
 	//accept connection
@@ -129,7 +129,7 @@ int main(int argc, char *argv[])
 	if(accept_return==-1)
 	{
 		syslog(LOG_ERR, "Connection could not be accepted");
-		exit(8);
+		exit(9);
 	}
 	else
 	{
@@ -147,22 +147,22 @@ int main(int argc, char *argv[])
 			if(fd_status==-1)
 			{
 				syslog(LOG_ERR, "Could not open the file to read");
-				exit(9);
+				exit(10);
 			}
 			int img_size = lseek(fd_status, 0, SEEK_END); //To find total bytes in the file (image size)
 			lseek(fd_status,0,SEEK_SET);
 			if(send(accept_return, &img_size, sizeof(img_size),0) == -1)  //Send the image size first through socket
 			{
 				syslog(LOG_ERR, "The image size couldn't be send to the client");
-				exit(13);
+				exit(11);
 			}
-			printf("\nReading byte by byte from the image file and sending to the client\n");
+			printf("\nReading one byte at a time from the image file and sending to the client\n");
 			while((rd_status=read(fd_status,&read_arr,1))!=0) //Read the file and store contents in the buffer
 			{
 				if(rd_status==-1)
 				{
 					syslog(LOG_ERR, "Could not read bytes from the file");
-					exit(10);
+					exit(12);
 				}
 		
 				//Send data packet to the client 
@@ -170,15 +170,15 @@ int main(int argc, char *argv[])
 				if(send_status==-1)
 				{
 					syslog(LOG_ERR, "The data packets couldn't be send to the client");
-					exit(11);
+					exit(13);
 				}
 				bytes_send++; 
 			}
-			printf("%d Bytes trasnferred to the client\n", bytes_send);
+			printf("%d bytes transferred to the client\n", bytes_send);
 			memset(read_arr,0,1);
 			bytes_send=0;
 			close(fd_status); //Close file after reading
-			sleep(70); //Sleep after a file is send for the client to process
+			sleep(80); //Sleep after an image is send for the client to process
 		}
 	}
 	gpioTerminate();

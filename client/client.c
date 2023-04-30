@@ -113,7 +113,7 @@ int main(int argc, char const* argv[])
 			syslog(LOG_ERR,"Could not read image size from server");
 			exit(8);
 		}
-		printf("Reading byte by byte from socket and writing to .png file\n"); 
+		printf("\nReading one byte at a time from the server and writing to file\n"); 
 		while(((read_status=recv(client_fd, &buffer,1,0))!=0))
 		{
 			if(read_status==-1)
@@ -131,7 +131,7 @@ int main(int argc, char const* argv[])
 			if(bytes_read == img_size)  //If total bytes read is equal to image size, exit from loop
 				break; 
 		}
-		printf("%d Bytes are read from socket\n",bytes_read);
+		printf("%d bytes are read from the server\n",bytes_read);
 		bytes_read=0;
 		close(fd_status);
 		int sys_status=system("python3 /etc/face-rec-sample/face_recog.py");  //Call the face recognition python code
@@ -140,17 +140,19 @@ int main(int argc, char const* argv[])
 			int exit_code = WEXITSTATUS(sys_status);
 			if(exit_code==1) //If face matches
 			{
+				printf("Opening the door. The door will close in 10 seconds\n");
 				gpioWrite(GPIO_LED, 0);
 				gpioWrite(GPIO_RELAY, 0); //Turn on relay (active low)
-				sleep(5);
+				sleep(10);
 				gpioWrite(GPIO_RELAY, 1); //Turn off relay
 				
 			}
-			else if(exit_code==0)
+			else if(exit_code==0) //Unknown face detected
 			{
+				printf("Intruder Alarm: Turning on LED for 10 seconds\n");
 				gpioWrite(GPIO_RELAY, 1); 
 				gpioWrite(GPIO_LED, 1); //Turn on intruder LED
-				sleep(5);
+				sleep(10);
 				gpioWrite(GPIO_LED, 0); //Turn off intruder LED
 			}
 		}
