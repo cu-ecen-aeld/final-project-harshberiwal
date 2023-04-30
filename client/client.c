@@ -32,28 +32,20 @@ int client_fd; //Socket connection
 //Signal handler
 void signal_handler(int sig)
 {
-	printf("Entering isnide handler\n");
 	if(sig==SIGINT)
-	{
 		syslog(LOG_INFO,"Caught SIGINT, leaving");
-		printf("Caught SIGINT, leaving\n");
-	}
-	else if(sig==SIGTERM)
-	{
-		syslog(LOG_INFO,"Caught SIGTERM, leaving");
-		printf("Caught SIGTERM, leaving\n");
-	}
-	else if (sig==SIGTSTP)
-	{
-		syslog(LOG_INFO,"Caught SIGTSTP, leaving");
-		printf("Caught SIGTSTP, leaving\n");
-	}
 
-	syslog(LOG_ERR,"Closed connection with 10.0.0.120");
-	printf("Closed connection with 10.0.0.120\n");
+	else if(sig==SIGTERM)
+		syslog(LOG_INFO,"Caught SIGTERM, leaving");
+
+	else if (sig==SIGTSTP)
+		syslog(LOG_INFO,"Caught SIGTSTP, leaving");
 
 	//Close socket connection
 	close(client_fd);
+
+	syslog(LOG_ERR,"Closed connection with 10.0.0.120");
+	printf("Closed connection with 10.0.0.120\n");
 	
 	exit(0); //Exit success 
 }
@@ -67,6 +59,12 @@ int main(int argc, char const* argv[])
 
 	openlog(NULL,LOG_PID, LOG_USER); //To setup logging with LOG_USER
 
+	//GPIO iniitializing code
+	if(gpioInitialise() < 0)
+		exit(7);
+	gpioWrite(GPIO_RELAY, 1);
+	gpioWrite(GPIO_LED, 0);
+
 	//Initialize signal handlers
 	if(signal(SIGINT,signal_handler)==SIG_ERR)
 	{
@@ -78,18 +76,7 @@ int main(int argc, char const* argv[])
 		syslog(LOG_ERR,"SIGTERM failed");
 		exit(10);
 	}
-	if(signal(SIGTSTP,signal_handler)==SIG_ERR)
-	{
-		syslog(LOG_ERR,"SIGTSTP failed");
-		exit(9);
-	}
 
-	//GPIO iniitializing code
-	if(gpioInitialise() < 0)
-		exit(7);
-	gpioWrite(GPIO_RELAY, 1);
-	gpioWrite(GPIO_LED, 0);
- 	
 	if ((client_fd = socket(AF_INET, SOCK_STREAM, 0)) < 0) 
 	{
 		syslog(LOG_ERR,"Socket creation error");
