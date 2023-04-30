@@ -142,6 +142,7 @@ int main(int argc, char *argv[])
 	{
 		if(gpioRead(GPIO_PIR)==0) //if PIR detects object/person at gpio pin 24
 		{
+			printf("\n Motion detected\n\n");
 			system("/home/capture"); //Create a fork process to capture an image if PIR detects motion
 			fd_status=open("/usr/bin/cap.png",O_RDONLY, S_IRWXU | S_IRWXG | S_IRWXO); //Open file to read only
 			if(fd_status==-1)
