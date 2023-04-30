@@ -32,6 +32,7 @@ int client_fd; //Socket connection
 //Signal handler
 void signal_handler(int sig)
 {
+	printf("Entering isnide handler\n");
 	if(sig==SIGINT)
 	{
 		syslog(LOG_INFO,"Caught SIGINT, leaving");
@@ -63,6 +64,8 @@ int main(int argc, char const* argv[])
 	struct sockaddr_in serv_addr;
 	char buffer[1];
 	int bytes_read=0;
+
+	openlog(NULL,LOG_PID, LOG_USER); //To setup logging with LOG_USER
 
 	//Initialize signal handlers
 	if(signal(SIGINT,signal_handler)==SIG_ERR)
