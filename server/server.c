@@ -1,7 +1,7 @@
 /*
  * filename: server.c
  * Created by: Shashank Chandrasekaran 
- * Description: Server side C code to transmit image to client
+ * Description: Server side C code to capture image from camera and transmit to client
  * Date: 21-Apr-2023
  * Reference: AESD Assignment code server.c
  */
@@ -151,12 +151,12 @@ int main(int argc, char *argv[])
 			}
 			int img_size = lseek(fd_status, 0, SEEK_END); //To find total bytes in the file (image size)
 			lseek(fd_status,0,SEEK_SET);
-			if(send(accept_return, &img_size, sizeof(img_size),0) == -1)  //Send the image size first through socet
+			if(send(accept_return, &img_size, sizeof(img_size),0) == -1)  //Send the image size first through socket
 			{
 				syslog(LOG_ERR, "The image size couldn't be send to the client");
 				exit(13);
 			}
-			printf("Reading byte by byte from the .png file and sending through socket\n");
+			printf("\nReading byte by byte from the image file and sending to the client\n");
 			while((rd_status=read(fd_status,&read_arr,1))!=0) //Read the file and store contents in the buffer
 			{
 				if(rd_status==-1)
@@ -174,7 +174,7 @@ int main(int argc, char *argv[])
 				}
 				bytes_send++; 
 			}
-			printf("%d Bytes send to the client\n", bytes_send);
+			printf("%d Bytes trasnferred to the client\n", bytes_send);
 			memset(read_arr,0,1);
 			bytes_send=0;
 			close(fd_status); //Close file after reading

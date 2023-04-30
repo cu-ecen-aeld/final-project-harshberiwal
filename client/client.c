@@ -1,7 +1,8 @@
 /*
  * filename: client.c
  * Created by: Shashank Chandrasekaran
- * Description: Client side C code to receive image from server
+ * Modified by: Harsh Beriwal (Added GPIO logic and integrated face recognition python code)
+ * Description: Client code to receive image, perform face recognition and actuate gpio
  * Date: 21-Apr-2023
  * Reference: https://www.geeksforgeeks.org/socket-programming-cc/
  */
@@ -21,6 +22,7 @@
 #include <fcntl.h>
 #include <signal.h>
 #include <pigpio.h>
+
 #define PORT 9000
 #define GPIO_RELAY 23
 #define GPIO_LED 24
@@ -33,16 +35,24 @@ void signal_handler(int sig)
 	if(sig==SIGINT)
 	{
 		syslog(LOG_INFO,"Caught SIGINT, leaving");
+		printf("Caught SIGINT, leaving\n");
 	}
 	else if(sig==SIGTERM)
 	{
 		syslog(LOG_INFO,"Caught SIGTERM, leaving");
+		printf("Caught SIGTERM, leaving\n");
 	}
-	
-	//Close socket connection
-	close(client_fd);
+	else if (sig==SIGTSTP)
+	{
+		syslog(LOG_INFO,"Caught SIGTSTP, leaving");
+		printf("Caught SIGTSTP, leaving\n");
+	}
+
 	syslog(LOG_ERR,"Closed connection with 10.0.0.120");
 	printf("Closed connection with 10.0.0.120\n");
+
+	//Close socket connection
+	close(client_fd);
 	
 	exit(0); //Exit success 
 }
@@ -64,6 +74,11 @@ int main(int argc, char const* argv[])
 	{
 		syslog(LOG_ERR,"SIGTERM failed");
 		exit(10);
+	}
+	if(signal(SIGTSTP,signal_handler)==SIG_ERR)
+	{
+		syslog(LOG_ERR,"SIGTSTP failed");
+		exit(9);
 	}
 
 	//GPIO iniitializing code
@@ -129,7 +144,7 @@ int main(int argc, char const* argv[])
 		printf("%d Bytes are read from socket\n",bytes_read);
 		bytes_read=0;
 		close(fd_status);
-		int sys_status=system("python3 /etc/face-rec-sample/face_recog.py"); 
+		int sys_status=system("python3 /etc/face-rec-sample/face_recog.py");  //Call the face recognition python code
 		if(WIFEXITED(sys_status)) 
 		{
 			int exit_code = WEXITSTATUS(sys_status);
@@ -138,7 +153,7 @@ int main(int argc, char const* argv[])
 				gpioWrite(GPIO_LED, 0);
 				gpioWrite(GPIO_RELAY, 0); //Turn on relay (active low)
 				sleep(5);
-				gpioWrite(GPIO_RELAY, 1); //Turn off relay (active low)
+				gpioWrite(GPIO_RELAY, 1); //Turn off relay
 				
 			}
 			else if(exit_code==0)
