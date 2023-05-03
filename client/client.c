@@ -87,7 +87,7 @@ int main(int argc, char const* argv[])
 	serv_addr.sin_port = htons(PORT);
 
 	//Convert IPv4 and IPv6 addresses from text to binary
-	if (inet_pton(AF_INET, "10.0.0.120", &serv_addr.sin_addr)<= 0) 
+	if (inet_pton(AF_INET, argv[1], &serv_addr.sin_addr)<= 0) 
 	{
 		syslog(LOG_ERR,"Invalid address: Address not supported");
 		exit(2);
